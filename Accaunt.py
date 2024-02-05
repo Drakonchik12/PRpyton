@@ -1,9 +1,16 @@
 from tkinter import *
-from login import log_text
 import csv
 
+def info():
+    file="lastac.txt"
+    with open(file, "r") as d:
+           logtext=d.read() 
+           return logtext
+           
+    
+           
 window = Tk()
-window.geometry('790x410')
+window.geometry('750x410')
 window.resizable(False, False)
 window.config(bg="Black")
 window.title("Your account")
@@ -15,32 +22,23 @@ favorites.place(x=45,y=345)
 edit = Button(window, text="Редагувати", fg="white", bg="#5F0000", width=27, height=2)
 edit.place(x=297,y=345)
 
-leav = Button(window, text="Вихід", fg="white", bg="#5F0000", width=27, height=2)
-leav.place(x=549,y=345)
-
-filename=".csv"
-with open(filename, "r", newline='') as h:
-    reader = csv.reader(h, delimiter=';')
-    for row in reader:
-        if len(row) > 1 and log_text == row[1]:
-            logi = row[0]
     
-    
-logintex = Label(window, text=logi, fg="white", bg="black",font=("Mulish", 14))
+logintex = Label(window, text="Логін",fg="white", bg="black",font=("Mulish", 14))
 logintex.pack()
-logintex.place(x=297, y=30)
+logintex.place(x=45, y=30)
 
-postntex = Label(window, text="userspost@gmail.com", fg="white", bg="black",font=("Mulish", 14))
+i=info()        
+postntex = Label(window, text=i, fg="white", bg="black",font=("Mulish", 14))
 postntex.pack()
-postntex.place(x=297, y=70)
+postntex.place(x=45, y=70)
 
 foruser = Canvas(window, width=440, height=190, bg="white")
 foruser.pack()
-foruser.place(x=297,y=125)
+foruser.place(x=45,y=125)
 
 foruser = Canvas(window, width=435, height=185, bg="black")
 foruser.pack()
-foruser.place(x=300,y=128)
+foruser.place(x=45,y=128)
 
 
 

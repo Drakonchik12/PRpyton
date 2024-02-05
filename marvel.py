@@ -10,6 +10,12 @@ import requests
 from io import BytesIO
 import os
 
+def infofilm():
+    file="info.txt"
+    resp=str(response)
+    subprocess.run(["python", "InfoFilm.py"])
+    with open(file, "w", encoding="utf-8") as fi:
+     fi.write(resp)   
 
 
 def open_telegram_bot(event):
@@ -28,21 +34,51 @@ def openone():
   subprocess.run(["python", "regestratoin.py"])
 
 
-
 def seartch():
-      
+
+
         url = "https://moviesdatabase.p.rapidapi.com/titles/search/akas/"
-        name=log.get()
-        url+=name
-        
-        querystring = {"info":"mini_info"}
+        name = log.get()  # Предполагается, что у вас есть переменная log с данными
+
+        url += name
+        querystring = {"info": "mini_info"}
         headers = {
             "X-RapidAPI-Key": "fa496f835cmsh4a81279f7f21920p10ef49jsn3c9d647f0d2c",
             "X-RapidAPI-Host": "moviesdatabase.p.rapidapi.com"
         }
-        response = requests.get(url, headers=headers)
 
-        print(response.json())
+        response = requests.get(url, headers=headers, params=querystring)
+        data = response.json()
+
+        # Проверяем, что результаты не пусты
+        if 'results' in data and data['results']:
+            # Вывод информации
+            print(f"Page: {data['page']}")
+            print(f"Next: {data['next']}")
+            print(f"Entries: {data['entries']}")
+
+            # Вывод результатов
+            for result in data['results']:
+                # Проверка на точное соответствие названия
+                if 'titleText' in result and 'text' in result['titleText'] and result['titleText']['text'] == name:
+                    print("\nTitle ID:", result['id'])
+                    print("Title Text:", result['titleText']['text'])
+
+                    # Дополнительные проверки для изображения и ссылки
+                    if 'primaryImage' in result and result['primaryImage'] is not None:
+                        print("Image URL:", result['primaryImage']['url'])
+                    else:
+                        print("No Image Available")
+
+                    print("Release Year:", result['releaseYear']['year'])
+                    print("Release Date:", result['releaseDate'])
+
+                    # Дополнительные параметры, которые необходимо вывести, могут быть добавлены по аналогии
+
+                    print("-" * 30)  # Добавляем разделитель между записями
+        else:
+            print(f"No results found for the title: {name}")
+
     
 window = Tk()
 window.geometry('1410x800')
@@ -58,7 +94,6 @@ labelai=Button(image=photo1, command=openaidialog)
 labelai.image=photo1
 labelai.config(width=50,height=50)
 labelai.place(x=1305,y=704)
-
 
 photo=Image.open('logo.png')
 photo=ImageTk.PhotoImage(photo)
@@ -110,54 +145,197 @@ rectangle_visible = BooleanVar()
 rectangle_visible.set(False)
 
 
+# Загрузка изображения из API
+new_width = 155
+new_height = 200
 
-film1 = Canvas(window, width=155, height=200, bg="gray")
-film1.pack()
-film1.place(x=130,y=210)
+response = requests.get('https://m.media-amazon.com/images/M/MV5BOGE4NzU1YTAtNzA3Mi00ZTA2LTg2YmYtMDJmMThiMjlkYjg2XkEyXkFqcGdeQXVyNTgzMDMzMTg@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
 
-film2 = Canvas(window, width=155, height=200, bg="gray")
-film2.pack()
-film2.place(x=330,y=210)
 
-film3 = Canvas(window, width=155, height=200, bg="gray")
-film3.pack()
-film3.place(x=530,y=210)
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
 
-film4 = Canvas(window, width=155, height=200, bg="gray")
-film4.pack()
-film4.place(x=730,y=210)
+# Создание метки с уменьшенным и повернутым изображением
+label_photo=Button(image=photo_img, command=infofilm)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=130, y=210)
 
-film5 = Canvas(window, width=155, height=200, bg="gray")
-film5.pack()
-film5.place(x=930,y=210)
 
-film6 = Canvas(window, width=155, height=200, bg="gray")
-film6.pack()
-film6.place(x=1130,y=210)
+response = requests.get('https://m.media-amazon.com/images/M/MV5BMTczNTI2ODUwOF5BMl5BanBnXkFtZTcwMTU0NTIzMw@@._V1_.jpg', stream=True).raw
+img = Image.open(response)
 
-film7 = Canvas(window, width=155, height=200, bg="gray")
-film7.pack()
-film7.place(x=130,y=455)
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
 
-film8 = Canvas(window, width=155, height=200, bg="gray")
-film8.pack()
-film8.place(x=330,y=455)
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
 
-film9 = Canvas(window, width=155, height=200, bg="gray")
-film9.pack()
-film9.place(x=530,y=455)
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=330,y=210)
 
-film10 = Canvas(window, width=155, height=200, bg="gray")
-film10.pack()
-film10.place(x=730,y=455)
 
-film11 = Canvas(window, width=155, height=200, bg="gray")
-film11.pack()
-film11.place(x=930,y=455)
+response = requests.get('https://m.media-amazon.com/images/M/MV5BMjM2NTQ5Mzc2M15BMl5BanBnXkFtZTgwNTcxMDI2NTE@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
 
-film12 = Canvas(window, width=155, height=200, bg="gray")
-film12.pack()
-film12.place(x=1130,y=455)
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=530,y=210)
+
+
+response = requests.get('https://m.media-amazon.com/images/M/MV5BMTYzOTc2NzU3N15BMl5BanBnXkFtZTcwNjY3MDE3NQ@@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
+
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=730,y=210)
+
+
+response = requests.get('https://m.media-amazon.com/images/M/MV5BNjgwNzAzNjk1Nl5BMl5BanBnXkFtZTgwMzQ2NjI1OTE@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
+
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=930,y=210)
+
+
+response = requests.get('https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
+
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=1130,y=210)
+
+
+
+response = requests.get('https://m.media-amazon.com/images/M/MV5BNTM4NjIxNmEtYWE5NS00NDczLTkyNWQtYThhNmQyZGQzMjM0XkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
+
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=130,y=455)
+
+
+response = requests.get('https://m.media-amazon.com/images/M/MV5BMTg1MTY2MjYzNV5BMl5BanBnXkFtZTgwMTc4NTMwNDI@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
+
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=330,y=455)
+
+
+response = requests.get('https://m.media-amazon.com/images/M/MV5BYmMxZWRiMTgtZjM0Ny00NDQxLWIxYWQtZDdlNDNkOTEzYTdlXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
+
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=530,y=455)
+
+
+response = requests.get('https://m.media-amazon.com/images/M/MV5BODZhNzlmOGItMWUyYS00Y2Q5LWFlNzMtM2I2NDFkM2ZkYmE1XkEyXkFqcGdeQXVyMTU5OTA4NTIz._V1_.jpg', stream=True).raw
+img = Image.open(response)
+
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
+
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=730,y=455)
+
+
+response = requests.get('https://m.media-amazon.com/images/M/MV5BNjM0NTc0NzItM2FlYS00YzEwLWE0YmUtNTA2ZWIzODc2OTgxXkEyXkFqcGdeQXVyNTgwNzIyNzg@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
+
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=930,y=455)
+
+
+response = requests.get('https://m.media-amazon.com/images/M/MV5BM2U2YWU5NWMtOGI2Ni00MGMwLWFkNjItMjgyZWMxNjllNTMzXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_.jpg', stream=True).raw
+img = Image.open(response)
+
+# Уменьшение размера изображения
+img.thumbnail((new_width, new_height))
+
+# Преобразование в PhotoImage
+photo_img = ImageTk.PhotoImage(img)
+
+# Создание метки с уменьшенным и повернутым изображением
+label_photo = Label(window, image=photo_img)
+label_photo.config(width=new_width, height=new_height)
+label_photo.image = photo_img
+label_photo.place(x=1130,y=455)
+
 
 
 

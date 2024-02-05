@@ -4,12 +4,14 @@ import tkinter as tk
 import subprocess
 import csv
 
+
 # windows
 window = Tk()
 window.geometry('654x520')
 window.resizable(False, False)
 window.config(bg="#022B49")
 window.title("Welcome")
+
 
 #labels
 
@@ -126,6 +128,7 @@ def glob():
 def go():
       global n 
       standartcolor()
+      global log_text
      
       log_text = log.get()
       pas_text = pas.get()
@@ -143,12 +146,19 @@ def go():
           notlog()
           
       filename="base.csv"
+      file="lastac.txt"
+      
             
       with open(filename, "r", newline='') as h:
          reader = csv.reader(h, delimiter=';')
          for row in reader:
             if len(row) > 2 and  (log_text == row[1] and pas_text == row[2]):
-               openacc()
+             
+             # Запись в файл
+             with open(file, "w", encoding="utf-8") as fi:
+                fi.write(log_text)   
+             openacc()
+               
             elif len(row) > 2 and  log_text != row[1]:
                 n += 1
                 notlogin()
